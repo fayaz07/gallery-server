@@ -11,8 +11,9 @@ const port = process.env.PORT || 3400;
 
 app.use(express.static("public"));
 
-app.get("/dl/:filename", (req: Request, res: Response) => {
+app.get("/dl/:album/:filename", (req: Request, res: Response) => {
   const fn = req.params.filename;
+  const album = req.params.album;
   const parts = fn.split(".");
   const extension = parts.pop(); // removes the last element from the array and returns it
   const fileNameWithoutExt = parts.join(".");
@@ -21,16 +22,16 @@ app.get("/dl/:filename", (req: Request, res: Response) => {
   let filePath = "";
   if (fileNameWithoutExt.endsWith("_lg")) {
     size = "large";
-    filePath = path.join(__dirname, "../public", size, fn);
+    filePath = path.join(__dirname, "../public", album, size, fn);
   } else if (fileNameWithoutExt.endsWith("_md")) {
     size = "medium";
-    filePath = path.join(__dirname, "../public", size, fn);
+    filePath = path.join(__dirname, "../public", album, size, fn);
   } else if (fileNameWithoutExt.endsWith("_sm")) {
     size = "small";
-    filePath = path.join(__dirname, "../public", size, fn);
+    filePath = path.join(__dirname, "../public", album, size, fn);
   } else {
     size = "original";
-    filePath = path.join(__dirname, "../public", fn);
+    filePath = path.join(__dirname, "../public", album, fn);
   }
 
   // Check if the file exists
@@ -53,7 +54,7 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/albums", (req: Request, res: Response) => {
   res.json({
     data: [
-      { id: "1", name: "album1", date: "20-03-2023", pages: 10 },
+      { id: "pondy", name: "album1", date: "20-03-2023", pages: 10 },
       { id: "2", name: "album2", date: "1-2-2023", pages: 5 },
     ],
   });
@@ -61,6 +62,8 @@ app.get("/albums", (req: Request, res: Response) => {
 
 app.get("/album/:id", (req: Request, res: Response) => {
   const page: string = req.query.page?.toString() || "1";
+
+  // if(req.params.id == "pondy")
 
   res.json({
     id: req.params.id,
